@@ -73,11 +73,20 @@
      <Compile Include="Assets\Content Agnostic\Utilities\DictionaryHandler.cs" />
      <Compile Include="Assets\Content Agnostic\Utilities\FileManagement.cs" />
      <Compile Include="Assets\Content Agnostic\Utilities\MathUtility.cs" />
+     <Compile Include="Assets\Script\AffectiveStates.cs" />
      <Compile Include="Assets\Script\Board.cs" />
+     <Compile Include="Assets\Script\ButtonClick.cs" />
+     <Compile Include="Assets\Script\Difficulty.cs" />
+     <Compile Include="Assets\Script\EmotionWrapper.cs" />
      <Compile Include="Assets\Script\GridPositions.cs" />
      <Compile Include="Assets\Script\PieceScript.cs" />
+     <Compile Include="Assets\Script\ScoresManager.cs" />
+     <Compile Include="Assets\Script\Tracker.cs" />
+     <Compile Include="Assets\Script\VisageTrackerNative.Windows.cs" />
      <Compile Include="Assets\Script\definitions.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\StreamingAssets\Visage Tracker\bdtsdata\LBF\pe\landmarks.txt" />
+     <None Include="Assets\StreamingAssets\Visage Tracker\bdtsdata\LBF\ye\landmarks.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

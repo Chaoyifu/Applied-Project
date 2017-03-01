@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public delegate void TimeOutDelegate();
 public delegate void LevelClearedDelegate();
@@ -14,6 +15,7 @@ public class Board : MonoBehaviour {
     public float zPiecePosition = 0.0f;
     public float specialPiece;
     public List <GameObject> PieceNormal;
+    public List<GameObject> PieceStrong;
     private static int[,] intGrid = new int[10, 10]; 
     public int maxPieces = 5;
     public int boardNum = 1;
@@ -26,7 +28,8 @@ public class Board : MonoBehaviour {
     private static Vector3 startPosition = new Vector3(0f, 0f, 0f);
     internal static PlayingPiece[,] PlayingPieces = new PlayingPiece[10, 10];
     internal static int[,] gdesc = new int[10,10];
-    private static List<GameObject> piecesToUseNormal = new List<GameObject>(); 
+    private static List<GameObject> piecesToUseNormal = new List<GameObject>();
+    private static List<GameObject> piecesToUseStrong = new List<GameObject>();
     private static Board instance = null;
     private bool started = false;
 
@@ -46,6 +49,21 @@ public class Board : MonoBehaviour {
     public bool newPieceFromTop = true;
     public AudioClip newPiece;
 
+
+    public GUIText BoardPoints;
+    public int PointsNormal = 5;
+
+    public GUIText TimeInfo;
+    public float levelTime = 5.0f;
+    private static float gameTimer = 0f;
+    private static float RestTime;
+    private static float timeToAdd = 5f;
+    internal static bool TimeOut = false;
+
+    public static float WinningScore = 300f;
+    public GameObject GameOverText;
+    //public GameObject timerMesh;
+
     public static Board Instance{
         get {
             return instance;
@@ -58,8 +76,12 @@ public class Board : MonoBehaviour {
             return;
         }
         //FrameworkCore.setContent(GameInfo.vocabularyContent);
+        DifficultyManagement.setDifficulty(Difficulty.Four);
+        Time.timeScale = 1;
         instance = this;
         StartBoard();
+        RestTime = levelTime * 60f;
+       
     }
     internal void StartBoard() {
         PlayingPieces = new PlayingPiece[columns, rows];
@@ -93,7 +115,14 @@ public class Board : MonoBehaviour {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 gdesc[x, y] = new int();
-                gdesc[x, y] = 1; 
+                if (DifficultyManagement.currentDifficulty < Difficulty.Four || x == 0 || x == columns - 1 || y == 0 || y == rows - 1)
+                    gdesc[x, y] = 1;
+                else {
+                    if (DifficultyManagement.currentDifficulty == Difficulty.Four && x > 0 && x < columns - 1 && y >0 && y < rows - 1){
+                        int tmp = Random.Range(1, 6);
+                        gdesc[x, y] = 1 + tmp / 5;
+                    }
+                }
             }
         }
         for (int y = 0; y < rows; y++) {
@@ -108,12 +137,20 @@ public class Board : MonoBehaviour {
                         do
                         {
                             int t = Random.Range(0, maxPieces);
-                            int title = Random.Range(0, 4);
+                            int title;
+                            if(DifficultyManagement.currentDifficulty < Difficulty.Three)
+                                title = Random.Range(0, (int)DifficultyManagement.currentDifficulty + 1);
+                            else
+                                title = Random.Range(0, 4);
                             switch (gdesc[x, y])
                             {
                                 case 1:
                                     GetPiecesToUse(title);
                                     PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(xp, yp, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                    break;
+                                case 2:
+                                    GetStrongPiecesToUse(title);
+                                    PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseStrong[t], new Vector3(xp, yp, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
                                     break;
                             }
 
@@ -134,6 +171,11 @@ public class Board : MonoBehaviour {
             }
         }
         started = true;
+    }
+
+    void OnGUI() {
+        BoardPoints.text = "Score: " + ScoresManager.CurrentPoints.ToString();
+        TimeInfo.text = "Time: " + RestTime.ToString(); 
     }
 
     internal PieceColor checkCol(string str)
@@ -342,6 +384,31 @@ public class Board : MonoBehaviour {
         piecesToUseNormal.Add(tmp);
     }
 
+    private void GetStrongPiecesToUse(int title)
+    {
+        piecesToUseStrong.Clear();
+        string[,] data = FrameworkCore.currentContent.getData();
+        /*for (int i = 0; i < maxPieces; i++) {
+            bool redo = true;
+            int t = 0;
+            do
+            {
+                t = Random.Range(0, PieceNormal.Count);
+                GameObject tmp = new GameObject();
+                tmp = PieceNormal[t];
+                tmp.GetComponent<TextMesh>().text = data[Random.RandomRange(0,5),Random.Range(0,2)];
+                if (!piecesToUseNormal.Contains(tmp))
+                {
+                    piecesToUseNormal.Add(tmp);
+                    redo = false;
+                }
+            } while (redo);*/
+        int t = 0;
+        GameObject tmp = PieceStrong[t];
+        tmp.GetComponent<TextMesh>().text = data[title, Random.Range(0, 2)];
+        piecesToUseStrong.Add(tmp);
+    }
+
     private void SlideDown(int x, int y) {
         for (int y1 = y; y1 >= 1; y1--) {
             if (gdesc[x, y1] !=(int)TileType.NoTile && PlayingPieces[x, y1] == null)
@@ -418,6 +485,23 @@ public class Board : MonoBehaviour {
 
     void Update() {
         //checkMovesTimer += Time.deltaTime;
+
+        if (ScoresManager.CurrentPoints >= WinningScore)
+        {
+            Time.timeScale = 0;
+            GameOverText.GetComponent<Text>().text = "You Win!!";
+            GameOverText.active = true;
+        }
+        if (TimeOut) {
+            Time.timeScale = 0;
+            GameOverText.active = true;
+        }
+        gameTimer += Time.deltaTime;
+        RestTime -= Time.deltaTime;
+        if (RestTime <= 0)
+            TimeOut = true;
+        
+
         if (started) {
             _MovingPieces = false;
             for (int y = 0; y < rows; y++) {
@@ -461,6 +545,20 @@ public class Board : MonoBehaviour {
                                     PlayingPieces[x, y].Selected = false;
                                     PlayingPieces[x, y] = null;
                                     gdesc[x, y] = (int)TileType.Done;
+                                    ScoresManager.AddPoints(PointsNormal);
+                                    RestTime += timeToAdd;
+                                    break;
+                                case TileType.Strong:
+                                    string name = PlayingPieces[x, y].Piece.GetComponent<TextMesh>().text.ToString();
+                                    Destroy(PlayingPieces[x, y].Piece);
+                                    GameObject tmp = PieceNormal[0];
+                                    tmp.GetComponent<TextMesh>().text = name;
+                                    PlayingPieces[x, y].Piece = Instantiate(tmp, new Vector3(_CurrentPosition.x, _CurrentPosition.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity )as GameObject;
+                                    PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
+                                    PlayingPieces[x, y].Selected = false;
+                                    gdesc[x, y] = (int)TileType.Normal;
+                                    ScoresManager.AddPoints(PointsNormal);
+                                    RestTime += timeToAdd;
                                     break;
                             }
                             //audio.PlayOneShot(destroyPiece);

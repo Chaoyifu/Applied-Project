@@ -86,6 +86,8 @@
      <Compile Include="Assets\Standard Assets\Utility\WaypointCircuit.cs" />
      <Compile Include="Assets\Standard Assets\Utility\WaypointProgressTracker.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\StreamingAssets\Visage Tracker\bdtsdata\LBF\pe\landmarks.txt" />
+     <None Include="Assets\StreamingAssets\Visage Tracker\bdtsdata\LBF\ye\landmarks.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -12,6 +12,7 @@ public enum PieceColor {
 public enum TileType
 {
     Normal = 1,
+    Strong,
     NoTile,
     Done,
 }
@@ -19,6 +20,28 @@ public enum GameStyle{
     Standard = 0,
     Marinas,
 }
+
+[System.Serializable]
+internal class gameState {
+    internal string PlayName { get; set; }
+    internal int CurrentLevel { get; set; }
+    internal int CurrentStage { get; set; }
+    internal long TotalScore { get; set; }
+    internal bool gotAchievement_1 { get; set; }
+    internal bool gotAchievement_2 { get; set; }
+    internal bool gotAchievement_3 { get; set; }
+    internal bool gotAchievement_4 { get; set; }
+    internal bool gotAchievement_5 { get; set; }
+    internal bool gotAchievement_6 { get; set; }
+    internal bool gotAchievement_7 { get; set; }
+    internal bool gotAchievement_8 { get; set; }
+    internal bool gotAchievement_9 { get; set; }
+    internal bool gotAchievement_10 { get; set; }
+
+}
+
+[System.Serializable]
+internal class ScoreTable : System.Collections.Generic.Dictionary<string, gameState> { }
 
 public struct GridPoint {
     public int x;
