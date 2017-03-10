@@ -151,7 +151,7 @@ public class Tracker : MonoBehaviour
 
 	void Start ()
 	{
-		// switch cam image
+        // switch cam image
 		contentSwitchCam.image = imageSwitchCam;
 		contentStartTracking.image = imageStartTracking;
 		contentStopTracking.image = imageStopTracking;
@@ -237,115 +237,112 @@ public class Tracker : MonoBehaviour
 
 		if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLCore)
 			Debug.Log ("Notice: if graphics API is set to OpenGLCore, the texture might not get properly updated.");
-
-        VisageTrackerNative._initTracker("foo", "foo");
         
 	}
 
     void Update ()
 	{
-	#if (UNITY_IPHONE || UNITY_ANDROID) && UNITY_EDITOR
+#if (UNITY_IPHONE || UNITY_ANDROID) && UNITY_EDITOR
 		// no tracking on ios while in editor
 		return;
-	#endif
+#endif
+                if (TrackerStatus != 0) {
 
-		if (TrackerStatus != 0) {
+                    // find device orientation
+                    currentOrientation = GetDeviceOrientation ();
 
-			// find device orientation
-			currentOrientation = GetDeviceOrientation ();
+                    // check if orientation or camera device changed
+                    if (currentOrientation != Orientation || currentDevice != device) 
+                    {
+                        OpenCamera (currentOrientation, currentDevice);
+                        Orientation = currentOrientation;
+                        device = currentDevice;
+                        texture = null;
+                    }
 
-			// check if orientation or camera device changed
-			if (currentOrientation != Orientation || currentDevice != device) 
-			{
-				OpenCamera (currentOrientation, currentDevice);
-				Orientation = currentOrientation;
-				device = currentDevice;
-				texture = null;
-			}
-				
-			// grab current frame and start face tracking
+                    // grab current frame and start face tracking
 
-			VisageTrackerNative._grabFrame ();
+                    VisageTrackerNative._grabFrame ();
 
-			TrackerStatus = VisageTrackerNative._track ();
+                    TrackerStatus = VisageTrackerNative._track ();
 
-			// update tracker status and translation and rotation
-			VisageTrackerNative._get3DData (out Translation.x, out Translation.y, out Translation.z, out Rotation.x, out Rotation.y, out Rotation.z);
+                    // update tracker status and translation and rotation
+                    VisageTrackerNative._get3DData (out Translation.x, out Translation.y, out Translation.z, out Rotation.x, out Rotation.y, out Rotation.z);
 
 
-			for (int i = 0; i < ControllableObjects.Length; i++)
-			{
-				ControllableObjects[i].transform.position = startingPositions[i] + Translation;
-				ControllableObjects[i].transform.rotation = Quaternion.Euler(startingRotations[i] + Rotation);
-			}
+                    for (int i = 0; i < ControllableObjects.Length; i++)
+                    {
+                        ControllableObjects[i].transform.position = startingPositions[i] + Translation;
+                        ControllableObjects[i].transform.rotation = Quaternion.Euler(startingRotations[i] + Rotation);
+                    }
 
-            transform.position = Translation;
-            transform.rotation = Quaternion.Euler (Rotation);
+                    transform.position = Translation;
+                    transform.rotation = Quaternion.Euler (Rotation);
 
-			VisageTrackerNative._getCameraInfo (out Focus, out ImageWidth, out ImageHeight);
+                    VisageTrackerNative._getCameraInfo (out Focus, out ImageWidth, out ImageHeight);
 
-			float aspect = ImageWidth / (float)ImageHeight;
+                    float aspect = ImageWidth / (float)ImageHeight;
 
-			float yRange = (ImageWidth > ImageHeight) ? 1.0f : 1.0f / aspect;
+                    float yRange = (ImageWidth > ImageHeight) ? 1.0f : 1.0f / aspect;
 
-			Camera.main.fieldOfView = Mathf.Rad2Deg * 2.0f * Mathf.Atan (yRange / Focus);
+                    Camera.main.fieldOfView = Mathf.Rad2Deg * 2.0f * Mathf.Atan (yRange / Focus);
 
-			VisageTrackerNative._getFaceModel (out VertexNumber, vertices, out TriangleNumber, triangles, texCoords);
+                    VisageTrackerNative._getFaceModel (out VertexNumber, vertices, out TriangleNumber, triangles, texCoords);
 
-			// vertices
-			if (Vertices.Length != VertexNumber)
-				Vertices = new Vector3[VertexNumber];
+                    // vertices
+                    if (Vertices.Length != VertexNumber)
+                        Vertices = new Vector3[VertexNumber];
 
-			for (int i = 0; i < VertexNumber; i++) {
-				Vertices [i] = new Vector3 (vertices [i * 3 + 0], vertices [i * 3 + 1], vertices [i * 3 + 2]);
-			}
+                    for (int i = 0; i < VertexNumber; i++) {
+                        Vertices [i] = new Vector3 (vertices [i * 3 + 0], vertices [i * 3 + 1], vertices [i * 3 + 2]);
+                    }
 
-			// triangles
-			if (Triangles.Length != TriangleNumber)
-				Triangles = new int[TriangleNumber * 3];
+                    // triangles
+                    if (Triangles.Length != TriangleNumber)
+                        Triangles = new int[TriangleNumber * 3];
 
-			for (int i = 0; i < TriangleNumber * 3; i++) {
-				Triangles [i] = triangles [i];
-			}
+                    for (int i = 0; i < TriangleNumber * 3; i++) {
+                        Triangles [i] = triangles [i];
+                    }
 
-			// tex coords
-			if (TexCoords.Length != VertexNumber)
-				TexCoords = new Vector2[VertexNumber];
+                    // tex coords
+                    if (TexCoords.Length != VertexNumber)
+                        TexCoords = new Vector2[VertexNumber];
 
-			for (int i = 0; i < VertexNumber; i++) {
-				TexCoords[i] = new Vector2(modelTexCoords[i].x, modelTexCoords[i].y); //new Vector2 (texCoords [i * 2 + 0], texCoords [i * 2 + 1]);
-			}
+                    for (int i = 0; i < VertexNumber; i++) {
+                        TexCoords[i] = new Vector2(modelTexCoords[i].x, modelTexCoords[i].y); //new Vector2 (texCoords [i * 2 + 0], texCoords [i * 2 + 1]);
+                    }
 
-		}
-        else
-        {
-           VisageTrackerNative._grabFrame();
+                }
+                else
+                {
+                   VisageTrackerNative._grabFrame();
 
-            TrackerStatus = VisageTrackerNative._track();
-        }
+                    TrackerStatus = VisageTrackerNative._track();
+                }
 
-        RefreshImage();
+                RefreshImage();
 
-        // create mesh
+                // create mesh
 
-        meshFilter.mesh.Clear();
-        if (currentEffect == FaceEffect.Tiger)
-        {
+                meshFilter.mesh.Clear();
+                if (currentEffect == FaceEffect.Tiger)
+                {
 
-            for (int i = 0; i < ControllableObjects.Length; i++)
-            {
-                ControllableObjects[i].transform.position -= new Vector3(0, 0, 10000);
+                    for (int i = 0; i < ControllableObjects.Length; i++)
+                    {
+                        ControllableObjects[i].transform.position -= new Vector3(0, 0, 10000);
 
-            }
+                    }
 
-            meshFilter.mesh.vertices = Vertices;
-            meshFilter.mesh.triangles = Triangles;
-            meshFilter.mesh.uv = TexCoords;
-            meshFilter.mesh.uv2 = TexCoords;
-            ;
-            meshFilter.mesh.RecalculateNormals();
-            meshFilter.mesh.RecalculateBounds();
-        }
+                    meshFilter.mesh.vertices = Vertices;
+                    meshFilter.mesh.triangles = Triangles;
+                    meshFilter.mesh.uv = TexCoords;
+                    meshFilter.mesh.uv2 = TexCoords;
+                    ;
+                    meshFilter.mesh.RecalculateNormals();
+                    meshFilter.mesh.RecalculateBounds();
+                }
     }
 
 

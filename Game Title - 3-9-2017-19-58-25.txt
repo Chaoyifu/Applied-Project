@@ -1,0 +1,5 @@
+[3.776484] Note: All times listed are in seconds since the start of the game!
+[3.776484] Some times (such as this message) may be the same. This means both happened within the same frame in Unity.
+[3.776484] Note: -9999 means emotions could not be analyzed on that frame. (Likely because the face could not be tracked)
+[15.47167] STATE CHANGE - NEW STATE -> Flow
+[19.45931] EMOTION MAX REACHED - The player has been detected in Flow for long enough to consider it their new state.

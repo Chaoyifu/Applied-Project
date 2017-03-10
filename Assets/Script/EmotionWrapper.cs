@@ -45,7 +45,7 @@ public class EmotionWrapper : MonoBehaviour
     // These variables are related to difficulty. You may be interested in modifying these.
 
     private int[,] swarmNums = new int[5, 5]; // Holds the number of each of the five types of ships for each of the five difficulty levels. See function initDifficulty.
-    private Difficulty curDifficulty = Difficulty.Three; // The default difficulty level.
+    private Difficulty curDifficulty = Difficulty.Four; // The default difficulty level.
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -256,7 +256,6 @@ public class EmotionWrapper : MonoBehaviour
                     currentEmotionDuration = 0;
                     FileManagement.stateChange(currentState);
                 }
-
                 // Have they sustained that emotion long enough to consider it their state?
                 if (currentEmotionDuration == EMOTIONMAX)
                 {
@@ -267,23 +266,27 @@ public class EmotionWrapper : MonoBehaviour
                     currentEmotionDuration = 0;
                     FileManagement.emotionMax(currentState);
                     waitForWave = true;
-
+                    Debug.Log((int)currentState);
                     // Determine how (if at all) we need to modify difficulty.
                     switch (currentState)
                     {
                         case AffectiveStates.Boredom:
                             curDifficulty = stepUp();
                             //setDifficulty(1);
+                            Debug.Log("stepUp");
                             break;
                         case AffectiveStates.Frustration:
                             curDifficulty = stepDown();
+                            Debug.Log("stepDown");
                             //setDifficulty(1);
                             break;
                         case AffectiveStates.Flow:
                             // If they're in Flow, don't change anything for awhile.
-                            currentDelay = ANALYSISDELAY * 5;
+                            currentDelay = ANALYSISDELAY * 3;
+                            Debug.Log("Flow");
                             break;
                     }
+                    DifficultyManagement.setDifficulty(curDifficulty);
                 }
             }
         }
@@ -332,6 +335,7 @@ public class EmotionWrapper : MonoBehaviour
             state = AffectiveStates.Flow;
         }
         // else - we already have none stored in state.
+        //Debug.Log((int)state);
         return state;
     }
 

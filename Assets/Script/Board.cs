@@ -60,6 +60,8 @@ public class Board : MonoBehaviour {
     private static float timeToAdd = 5f;
     internal static bool TimeOut = false;
 
+    public GUIText DifficultyInfo;
+
     public static float WinningScore = 300f;
     public GameObject GameOverText;
     //public GameObject timerMesh;
@@ -118,7 +120,7 @@ public class Board : MonoBehaviour {
                 if (DifficultyManagement.currentDifficulty < Difficulty.Four || x == 0 || x == columns - 1 || y == 0 || y == rows - 1)
                     gdesc[x, y] = 1;
                 else {
-                    if (DifficultyManagement.currentDifficulty == Difficulty.Four && x > 0 && x < columns - 1 && y >0 && y < rows - 1){
+                    if (DifficultyManagement.currentDifficulty >= Difficulty.Four && x > 0 && x < columns - 1 && y >0 && y < rows - 1){
                         int tmp = Random.Range(1, 6);
                         gdesc[x, y] = 1 + tmp / 5;
                     }
@@ -175,7 +177,9 @@ public class Board : MonoBehaviour {
 
     void OnGUI() {
         BoardPoints.text = "Score: " + ScoresManager.CurrentPoints.ToString();
-        TimeInfo.text = "Time: " + RestTime.ToString(); 
+        TimeInfo.text = "Time: " + RestTime.ToString();
+        DifficultyInfo.text = "Difficulty: " + (int)DifficultyManagement.currentDifficulty;
+
     }
 
     internal PieceColor checkCol(string str)
@@ -451,16 +455,55 @@ public class Board : MonoBehaviour {
                     do
                     {
                         int t = Random.Range(0, maxPieces);
-                        int title = Random.Range(0, 4);
-                        if (!newPieceFromTop)
-                        {
-                            GetPiecesToUse(title);
-                            PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                        int title;
+                        if (DifficultyManagement.currentDifficulty < Difficulty.Three)
+                            title = Random.Range(0, (int)DifficultyManagement.currentDifficulty + 1);
+                        else
+                            title = Random.Range(0, 4);
+                        if (!newPieceFromTop){
+                            if (DifficultyManagement.currentDifficulty < Difficulty.Five){
+                                GetPiecesToUse(title);
+                                PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                            }
+                            else {
+                                if (DifficultyManagement.currentDifficulty >= Difficulty.Five)
+                                {
+                                    int tmp = Random.Range(1, 6);
+                                    if (tmp < 5)
+                                    {
+                                        GetPiecesToUse(title);
+                                        PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                    }
+                                    else {
+                                        GetStrongPiecesToUse(title);
+                                        PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseStrong[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            GetPiecesToUse(title);
-                            PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                            if (DifficultyManagement.currentDifficulty < Difficulty.Five)
+                            {
+                                GetPiecesToUse(title);
+                                PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                            }
+                            else {
+                                if (DifficultyManagement.currentDifficulty >= Difficulty.Five)
+                                {
+                                    int tmp = Random.Range(1, 6);
+                                    if (tmp < 5)
+                                    {
+                                        GetPiecesToUse(title);
+                                        PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                                    }
+                                    else {
+                                        GetStrongPiecesToUse(title);
+                                        PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseStrong[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                                    }
+                                }
+                            }
+
                         }
                         if (CheckTileMatchX(x, y, true) || CheckTileMatchY(x, y, true))
                         {
@@ -485,7 +528,6 @@ public class Board : MonoBehaviour {
 
     void Update() {
         //checkMovesTimer += Time.deltaTime;
-
         if (ScoresManager.CurrentPoints >= WinningScore)
         {
             Time.timeScale = 0;

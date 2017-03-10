@@ -12,11 +12,12 @@ public static partial class VisageTrackerNative
  	 * Implemented in VisageTrackerUnityPlugin library.
  	 */
 #if (UNITY_64 || UNITY_EDITOR_64)
-    [DllImport("VisageTrackerUnityPlugin64")]
+        [DllImport("VisageTrackerUnityPlugin64")]
 #else
 	    [DllImport("VisageTrackerUnityPlugin")]
 #endif
     public static extern void _initTracker(string config, string license);
+
 
     /** Fills the imageData with the current frame image data.
      * 

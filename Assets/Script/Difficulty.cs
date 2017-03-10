@@ -8,7 +8,7 @@
 
 public enum Difficulty
 {
-    One,
+    One = 1,
     Two,
     Three,
     Four,
