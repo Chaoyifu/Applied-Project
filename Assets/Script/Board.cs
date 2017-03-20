@@ -64,7 +64,6 @@ public class Board : MonoBehaviour {
 
     public static float WinningScore = 300f;
     public GameObject GameOverText;
-    //public GameObject timerMesh;
 
     public static Board Instance{
         get {
@@ -77,12 +76,14 @@ public class Board : MonoBehaviour {
             Destroy(this);
             return;
         }
+        started = false;
         //FrameworkCore.setContent(GameInfo.vocabularyContent);
         DifficultyManagement.setDifficulty(Difficulty.Four);
+        ScoresManager.AddPoints(-ScoresManager.CurrentPoints);
+        RestTime = levelTime * 60f;
         Time.timeScale = 1;
         instance = this;
         StartBoard();
-        RestTime = levelTime * 60f;
        
     }
     internal void StartBoard() {
@@ -464,19 +465,22 @@ public class Board : MonoBehaviour {
                             if (DifficultyManagement.currentDifficulty < Difficulty.Five){
                                 GetPiecesToUse(title);
                                 PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
                             }
                             else {
                                 if (DifficultyManagement.currentDifficulty >= Difficulty.Five)
                                 {
-                                    int tmp = Random.Range(1, 6);
-                                    if (tmp < 5)
+                                    int tmp = Random.Range(1, 9);
+                                    if (tmp < 8)
                                     {
                                         GetPiecesToUse(title);
                                         PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                        PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
                                     }
                                     else {
                                         GetStrongPiecesToUse(title);
                                         PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseStrong[t], new Vector3(v0.x, v0.y, zPiecePosition - Random.Range(20f, 30f)), Quaternion.identity) as GameObject, (PieceColor)title);
+                                        PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Strong;
                                     }
                                 }
                             }
@@ -487,19 +491,22 @@ public class Board : MonoBehaviour {
                             {
                                 GetPiecesToUse(title);
                                 PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                                PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
                             }
                             else {
                                 if (DifficultyManagement.currentDifficulty >= Difficulty.Five)
                                 {
-                                    int tmp = Random.Range(1, 6);
-                                    if (tmp < 5)
+                                    int tmp = Random.Range(1, 9);
+                                    if (tmp < 8)
                                     {
                                         GetPiecesToUse(title);
                                         PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseNormal[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                                        PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
                                     }
                                     else {
                                         GetStrongPiecesToUse(title);
                                         PlayingPieces[x, y] = new PlayingPiece(Instantiate(piecesToUseStrong[t], new Vector3(v0.x, v0.y + Random.Range(20f, 30f), zPiecePosition - 25f), Quaternion.identity) as GameObject, (PieceColor)title);
+                                        PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Strong;
                                     }
                                 }
                             }
@@ -515,7 +522,6 @@ public class Board : MonoBehaviour {
                             again = false;
                     } while (again);
                     //audio.PlayOneShot(newPiece);
-                    PlayingPieces[x, y].pieceScript.currentStrenght = TileType.Normal;
                     PlayingPieces[x, y].pieceScript.MoveTo(x, y, zPiecePosition - 25f);
                     PlayingPieces[x, y].Selected = false;
                 }
@@ -528,15 +534,18 @@ public class Board : MonoBehaviour {
 
     void Update() {
         //checkMovesTimer += Time.deltaTime;
-        if (ScoresManager.CurrentPoints >= WinningScore)
+        if (ScoresManager.CurrentPoints >= WinningScore && started)
         {
             Time.timeScale = 0;
             GameOverText.GetComponent<Text>().text = "You Win!!";
-            GameOverText.active = true;
+            GameOverText.SetActive(true);
+            started = false;
         }
-        if (TimeOut) {
+        if (TimeOut && started) {
             Time.timeScale = 0;
-            GameOverText.active = true;
+            GameOverText.GetComponent<Text>().text = "Game Over";
+            GameOverText.SetActive(true);
+            started = false;
         }
         gameTimer += Time.deltaTime;
         RestTime -= Time.deltaTime;
