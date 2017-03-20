@@ -8,7 +8,7 @@ using System.Collections;
 public static class GameInfo
 {
     // Change to the title of your game.
-    public const string gameTitle = "Game Title";
+    public const string gameTitle = "Bingo Bingo";
 
     // Change this to be an object of your child class.
     public static Mechanics mechanics = new NoMechanics();

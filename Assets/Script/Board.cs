@@ -60,7 +60,7 @@ public class Board : MonoBehaviour {
     private static float timeToAdd = 5f;
     internal static bool TimeOut = false;
 
-    public GUIText DifficultyInfo;
+    //public GUIText DifficultyInfo;
 
     public static float WinningScore = 300f;
     public GameObject GameOverText;
@@ -178,8 +178,8 @@ public class Board : MonoBehaviour {
 
     void OnGUI() {
         BoardPoints.text = "Score: " + ScoresManager.CurrentPoints.ToString();
-        TimeInfo.text = "Time: " + RestTime.ToString();
-        DifficultyInfo.text = "Difficulty: " + (int)DifficultyManagement.currentDifficulty;
+        TimeInfo.text = "Time: " + ((int)RestTime).ToString();
+        //DifficultyInfo.text = "Difficulty: " + (int)DifficultyManagement.currentDifficulty;
 
     }
 
