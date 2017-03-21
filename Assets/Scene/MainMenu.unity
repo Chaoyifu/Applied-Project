@@ -91,6 +91,48 @@ NavMeshSettings:
     cellSize: 0.16666667
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &172674877
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000012437080068, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 6505ff057c0f8df40820111803aa7c92, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &357180902
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,6 +450,20 @@ Prefab:
     - target: {fileID: 4000010544658960, guid: 1d983641086874b43ba09d018d1406ef, type: 2}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013828475058, guid: 1d983641086874b43ba09d018d1406ef, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010453380060, guid: 1d983641086874b43ba09d018d1406ef,
+        type: 2}
+      propertyPath: m_Text
+      value: 'You will now play the first version of the game. Play for as long as
+        you like.
+
+        Match three like items in a row.
+
+        (It might take a few seconds between when you click play and the game starts.)'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1d983641086874b43ba09d018d1406ef, type: 2}

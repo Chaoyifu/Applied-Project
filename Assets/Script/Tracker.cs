@@ -149,8 +149,21 @@ public class Tracker : MonoBehaviour
 
     #endregion
 
+    private static Tracker instance = null;
+
 	void Start ()
 	{
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if(instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // switch cam image
 		contentSwitchCam.image = imageSwitchCam;
 		contentStartTracking.image = imageStartTracking;

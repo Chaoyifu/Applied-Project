@@ -228,7 +228,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013386884736}
-  m_Text: Sin45
+  m_Text: huffy
   m_OffsetZ: 0
   m_CharacterSize: 0.25
   m_LineSpacing: 1
